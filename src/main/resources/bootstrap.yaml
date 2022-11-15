@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: cnb-business-scheduled-payment-executor

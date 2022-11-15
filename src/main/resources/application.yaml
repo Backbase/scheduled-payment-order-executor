@@ -1,0 +1,59 @@
+server:
+  port: 9775
+
+logging:
+  level:
+    com.backbase: INFO
+
+spring:
+  activemq:
+    user: admin
+    password: admin
+    broker-url: tcp://localhost:61616
+
+# API Registry client configuration
+eureka:
+  instance:
+    hostname: localhost
+    preferIpAddress: false
+    appname: ${spring.application.name}
+    healthCheckUrlPath: /actuator/health
+    statusPageUrlPath: /actuator/info
+    nonSecurePort: ${server.port}
+    metadata-map:
+      public: true
+      role: live
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/registry/eureka/
+
+# Configure Internal JWT handler
+sso:
+  jwt:
+    internal:
+      signature:
+        key:
+          type: ENV
+          value: SIG_SECRET_KEY
+
+# Spring health monitoring
+management:
+  health:
+    jms:
+     enabled: false
+
+payment-order-iterator:
+  pageSize: 100
+
+payment-scheduler:
+  cron-expression: "0/10 * * * * ?"
+  limit-checks-enabled: true
+  iterator-properties:
+    pageSize: 50
+  query-filters:
+    statuses: ENTERED, READY, ACCEPTED
+    paymentTypes: INTERNAL_TRANSFER, ACH_DEBIT, ACH_CREDIT, US_DOMESTIC_WIRE, US_FOREIGN_WIRE
+  retry-error-codes: COCC-101, COCC-202
+  retry-exception-classes: java.io.IOException
+  retry-max-attempts: 3
+  retry-backoff-delay-millis: 1000
